@@ -64,7 +64,8 @@ export default function Home() {
 
   useEffect(() => {
     const todosStr = localStorage.getItem("react-todos");
-    setTodos(JSON.parse(todosStr));
+    if (!todosStr) setTodos([]);
+    else setTodos(JSON.parse(todosStr));
   }, []);
 
   const [isFirstRender, setIsFirstRender] = useState(true);
