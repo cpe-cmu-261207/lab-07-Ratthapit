@@ -8,13 +8,86 @@ import {
 } from "@tabler/icons";
 
 export default function Home() {
-  const deleteTodo = (idx) => {};
+  const [Todos, setTodos] = useState([]);
 
-  const markTodo = (idx) => {};
+  const deleteTodo = (idx) => {
+    Todos.splice(idx, 1);
+    const newTodos = [...Todos];
+    setTodos(newTodos);
+  };
 
-  const moveUp = (idx) => {};
+  const markTodo = (idx) => {
+    Todos[idx].completed = !Todos[idx].completed;
+    setTodos([...Todos]);
+  };
 
-  const moveDown = (idx) => {};
+  const moveUp = (idx) => {
+    if (idx === 0) return;
+    else {
+      const saveTodo = Todos[idx].title;
+      const saveCompleted = Todos[idx].completed;
+
+      Todos[idx].title = Todos[idx - 1].title;
+      Todos[idx - 1].title = saveTodo;
+
+      Todos[idx].completed = Todos[idx - 1].completed;
+      Todos[idx - 1].completed = saveCompleted;
+
+      setTodos([...Todos]);
+    }
+  };
+
+  const moveDown = (idx) => {
+    if (idx === Todos.length) return;
+    else {
+      const saveTodo = Todos[idx].title;
+      const saveCompleted = Todos[idx].completed;
+
+      Todos[idx].title = Todos[idx + 1].title;
+      Todos[idx + 1].title = saveTodo;
+
+      Todos[idx].completed = Todos[idx + 1].completed;
+      Todos[idx + 1].completed = saveCompleted;
+
+      setTodos([...Todos]);
+    }
+  };
+
+  const addTodo = (title, completed) => {
+    setTodos([{ title: title, completed: completed }, ...Todos]);
+  };
+
+  const saveTodo = () => {
+    const todosStr = JSON.stringify(Todos);
+    localStorage.setItem("react-todos", todosStr);
+  };
+
+  useEffect(() => {
+    const todosStr = localStorage.getItem("react-todos");
+    setTodos(JSON.parse(todosStr));
+  }, []);
+
+  const [isFirstRender, setIsFirstRender] = useState(true);
+
+  useEffect(() => {
+    if (isFirstRender) {
+      setIsFirstRender(false);
+      return;
+    }
+    saveTodo();
+  }, [Todos]);
+
+  const handleInput = (event) => {
+    if (event.key !== "Enter") return;
+    if (event.key == "Enter") {
+      if (event.target.value === "") {
+        alert("Todo cannot be empty");
+        return;
+      }
+      addTodo(event.target.value, false);
+      event.target.value = "";
+    }
+  };
 
   return (
     <div>
@@ -28,40 +101,33 @@ export default function Home() {
         <input
           className="form-control mb-1 fs-4"
           placeholder="insert todo here..."
+          onKeyUp={handleInput}
         />
-        {/* Todos */}
-        {/* Example 1 */}
-        <div className="border-bottom p-1 py-2 fs-2 d-flex gap-2">
-          <span className="me-auto">Todo</span>
-        </div>
-        {/* Example 2 */}
-        <div className="border-bottom p-1 py-2 fs-2 d-flex gap-2">
-          <span className="me-auto">Todo with buttons</span>
-
-          <button className="btn btn-success">
-            <IconCheck />
-          </button>
-          <button className="btn btn-secondary">
-            <IconArrowUp />
-          </button>
-          <button className="btn btn-secondary">
-            <IconArrowDown />
-          </button>
-          <button className="btn btn-danger">
-            <IconTrash />
-          </button>
-        </div>
+        {Todos.map((element, index) => (
+          <Todo
+            title={element.title}
+            completed={element.completed}
+            onDelete={() => deleteTodo(index)}
+            onMark={() => markTodo(index)}
+            up={() => moveUp(index)}
+            down={() => moveDown(index)}
+          />
+        ))}
 
         {/* summary section */}
         <p className="text-center fs-4">
-          <span className="text-primary">All (2) </span>
-          <span className="text-warning">Pending (2) </span>
-          <span className="text-success">Completed (0)</span>
+          <span className="text-primary">All ({Todos.length}) </span>
+          <span className="text-warning">
+            Pending ({Todos.filter((x) => x.completed == false).length}){" "}
+          </span>
+          <span className="text-success">
+            Completed ({Todos.filter((x) => x.completed == true).length})
+          </span>
         </p>
 
         {/* Made by section */}
         <p className="text-center mt-3 text-muted fst-italic">
-          made by Chayanin Suatap 12345679
+          made by Pimpitcha Kanitpanyajaroen 640610654
         </p>
       </div>
     </div>
