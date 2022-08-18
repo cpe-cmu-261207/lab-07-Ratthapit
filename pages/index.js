@@ -103,6 +103,7 @@ export default function Home() {
           placeholder="insert todo here..."
           onKeyUp={handleInput}
         />
+
         {Todos.map((element, index) => (
           <Todo
             title={element.title}
@@ -113,7 +114,6 @@ export default function Home() {
             down={() => moveDown(index)}
           />
         ))}
-
         {/* summary section */}
         <p className="text-center fs-4">
           <span className="text-primary">All ({Todos.length}) </span>
@@ -124,7 +124,6 @@ export default function Home() {
             Completed ({Todos.filter((x) => x.completed == true).length})
           </span>
         </p>
-
         {/* Made by section */}
         <p className="text-center mt-3 text-muted fst-italic">
           made by Pimpitcha Kanitpanyajaroen 640610654
